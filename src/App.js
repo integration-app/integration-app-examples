@@ -1,25 +1,29 @@
-import logo from './logo.svg';
 import './App.css';
+import {IntegrationSDKProvider, useIApp} from "./integration-components/IntegrationSDK";
+import * as React from "react";
+import {IntegrationProvider} from "./integration-components/integration/IntegrationProvider";
+import {IntegrationLogo} from "./integration-components/integration/IntegrationLogo";
+import {IntegrationName} from "./integration-components/integration/IntegrationName";
+import {DataSourceInstanceProvider} from "./integration-components/data-source/DataSourceInstanceProvider";
+import {DataSourceInstanceSelector} from "./integration-components/data-source/DataSourceInstanceSelector";
+
 
 function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+    const accessToken = "PASTE_ACCESS_TOKE_HERE"
+
+    return (
+        <IntegrationSDKProvider accessToken={accessToken}>
+            <IntegrationProvider integrationKey={"dynamics-365"}>
+                <IntegrationLogo/>
+                <IntegrationName/>
+
+                <DataSourceInstanceProvider dataSourceKey="all-data">
+                    <DataSourceInstanceSelector>
+                    </DataSourceInstanceSelector>
+                </DataSourceInstanceProvider>
+            </IntegrationProvider>
+        </IntegrationSDKProvider>
+    );
 }
 
 export default App;
