@@ -3,6 +3,7 @@ import { IntegrationAppClient } from "@integration-app/sdk";
 import MainApp from "../views/MainApp.vue";
 
 const token = "";
+const flowKey = "";
 const fieldMappingKey = "";
 
 const integrationApp = new IntegrationAppClient({
@@ -17,6 +18,7 @@ const { user } = await integrationApp.self.get();
   <div v-else>
     <MainApp
       :integrationApp="integrationApp"
+      :flowKey="flowKey"
       :fieldMappingKey="fieldMappingKey"
     />
   </div>

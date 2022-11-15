@@ -7,6 +7,7 @@ import Import from "./Import.vue";
 
 const props = defineProps({
   integrationApp: Object,
+  flowKey: String,
   fieldMappingKey: String,
 });
 
@@ -61,6 +62,7 @@ function handeDataLocationSelect(location) {
       :disabled="!integrationKey || !dataLocation"
       :integrationApp="integrationApp"
       :integrationKey="integrationKey"
+      :flowKey="flowKey"
       :fieldMappingKey="fieldMappingKey"
     />
   </div>

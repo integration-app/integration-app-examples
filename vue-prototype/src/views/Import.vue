@@ -5,6 +5,7 @@ const props = defineProps({
   integrationApp: Object,
   integrationKey: String,
   fieldMappingKey: String,
+  flowKey: String,
   disabled: Boolean,
 });
 
@@ -14,7 +15,7 @@ async function importData() {
   output.value = null;
   const flowRun = await props.integrationApp
     ?.flowInstance({
-      flowKey: "import-data-example",
+      flowKey: props.flowKey,
       integrationKey: props.integrationKey,
       fieldMappingKey: props.fieldMappingKey,
       autoCreate: true,
