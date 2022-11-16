@@ -45,14 +45,11 @@ async function importData() {
           </thead>
           <tbody>
             <tr v-for="item in output.items">
-              <td>{{ item.data.fields.name }}</td>
-              <td>{{ item.data.fields.email }}</td>
+              <td>{{ item.fields?.name ?? item.data?.fields?.name }}</td>
+              <td>{{ item.fields?.email ?? item.data?.fields?.email }}</td>
             </tr>
           </tbody>
         </table>
-        <code>
-          <pre>{{ output }}</pre>
-        </code>
       </div>
     </div>
   </div>
