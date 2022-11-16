@@ -12,13 +12,11 @@ const props = defineProps({
 });
 
 const integrationKey = ref();
-const dataLocation = ref();
 const addNewConnection = ref(false);
 
 function handleConnectionSelect(connectionKey) {
   if (integrationKey.value !== connectionKey) {
     integrationKey.value = connectionKey;
-    dataLocation.value = null;
   }
 }
 
@@ -30,9 +28,6 @@ function handleAddNewConnectionClose() {
   addNewConnection.value = false;
 }
 
-function handeDataLocationSelect(location) {
-  dataLocation.value = location;
-}
 </script>
 
 <template>
@@ -52,14 +47,14 @@ function handeDataLocationSelect(location) {
 
     <FieldMapping
       v-if="integrationKey"
-      :disabled="!integrationKey || !dataLocation"
+      :disabled="!integrationKey"
       :integrationApp="integrationApp"
       :integrationKey="integrationKey"
       :fieldMappingKey="fieldMappingKey"
     />
 
     <Import
-      :disabled="!integrationKey || !dataLocation"
+      v-if="integrationKey"
       :integrationApp="integrationApp"
       :integrationKey="integrationKey"
       :flowKey="flowKey"

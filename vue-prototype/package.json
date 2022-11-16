@@ -9,7 +9,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@integration-app/sdk": "^0.16.11",
+    "@integration-app/sdk": "^0.16.15",
     "vue": "^3.2.41"
   },
   "devDependencies": {

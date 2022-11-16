@@ -18,19 +18,9 @@ const app = props.integrationApp?.fieldMappingInstance({
 });
 
 const fieldMappingInstanceData = await app.get();
-await updateFields();
-
-async function updateFields() {
-  appFields.value = fieldMappingInstanceData.getAppFields();
-  externalFields.value = fieldMappingInstanceData.getExternalFields();
-}
 
 async function handleConfig() {
   await app.openConfiguration();
-}
-
-function getExternalField(field) {
-  return externalFields.value.find((f) => f.key === field.key);
 }
 </script>
 

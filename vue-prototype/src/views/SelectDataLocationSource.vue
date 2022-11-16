@@ -8,60 +8,60 @@ const props = defineProps({
   onSelect: Function,
 });
 
-const dataSourceKey = "contacts";
+const udm = "contacts";
 
-const dataSourceInstanseAccessor = ref();
-const dataSourceInstance = ref();
-const dataLocation = ref();
+const dataSourceAccessor = ref();
+const dataSource = ref();
+const dataCollection = ref();
+const dataLocations = ref();
+const directory = ref();
 const showDataLocationNavigator = ref(false);
 const listResponse = ref();
 
 function getDataSourceInstanseAccessor() {
-  dataSourceInstanseAccessor.value = props.integrationApp?.dataSourceInstance({
+  dataSourceAccessor.value = props.integrationApp?.dataSource({
     integrationKey: props.integrationKey,
-    dataSourceKey,
+    udm,
     autoCreate: true,
   });
 }
 
 async function getDataSourceInstance() {
-  dataLocation.value = null;
+  dataCollection.value = null;
   listResponse.value = null;
 
-  dataSourceInstance.value = await dataSourceInstanseAccessor.value.get();
+  dataSource.value = await dataSourceAccessor.value.get();
 }
 
-async function updateDataLocation() {
-  dataLocation.value = await props.integrationApp
-    ?.dataLocation({
-      integrationKey: props.integrationKey,
-      path: dataSourceInstance.value.path,
-    })
-    .get();
+async function getCollection() {
+  dataCollection.value = await await dataSourceAccessor.value.getCollection()
 }
 
-function handleSubmit(dataLocation) {
-  props?.onSelect?.(
-    dataLocation?.type === "collection" ? dataLocation.name : undefined
-  );
+async function getLocations() {
+  const locationsResponse = await await dataSourceAccessor.value.getLocations(directory.value ? {path: directory.value} : null)
+  dataLocations.value = locationsResponse?.locations
 }
 
 getDataSourceInstanseAccessor();
 await getDataSourceInstance();
-await updateDataLocation();
-if (dataLocation.value) handleSubmit(dataLocation.value);
+await getCollection();
+await getLocations();
 
 watch(() => props.integrationKey, getDataSourceInstanseAccessor);
-watch(dataSourceInstanseAccessor, getDataSourceInstance);
-watch(dataSourceInstance, updateDataLocation);
-watch(dataLocation, handleSubmit);
+watch(dataSourceAccessor, getDataSourceInstance);
+watch(dataSource, getCollection);
+watch(directory, getLocations)
 
 async function toggleChangeLocationInline() {
   showDataLocationNavigator.value = !showDataLocationNavigator.value;
 }
 
-async function handleDataLocationPathChange(path) {
-  await dataSourceInstanseAccessor.value.patch({
+async function handleDirectorySelect(path) {
+  directory.value = path;
+}
+
+async function handleCollectionSelect(path) {
+  await dataSourceAccessor.value.patch({
     path,
   });
 
@@ -69,13 +69,21 @@ async function handleDataLocationPathChange(path) {
   showDataLocationNavigator.value = false;
 }
 
-async function handleChangeLocationPopup() {
-  await dataSourceInstanseAccessor.value.openConfiguration();
+async function handleLocationSelect(location) {
+  if (location.type === 'directory') {
+    await handleDirectorySelect(location.path)
+  } else {
+    await handleCollectionSelect(location.path)
+  }
+}
+
+async function handleConfigureDataSource() {
+  await dataSourceAccessor.value.openConfiguration();
   await getDataSourceInstance();
 }
 
-async function resetLocation() {
-  await dataSourceInstanseAccessor.value.reset();
+async function resetDataSource() {
+  await dataSourceAccessor.value.reset();
   await getDataSourceInstance();
 }
 </script>
@@ -83,51 +91,53 @@ async function resetLocation() {
 <template>
   <div>
     <h2>
-      Data Location Source:
-      {{ dataLocation?.name ? dataLocation?.name : "Loading..." }}
+      Data Source:
+      {{ dataCollection?.name }}
     </h2>
     <div class="flex flex-row gap-4 items-center">
       <button
         class="btn btn-secondary"
-        :disabled="!dataLocation"
+        :disabled="!dataCollection"
         @click.stop.prevent="toggleChangeLocationInline"
       >
         {{
-          dataLocation?.type === "collection"
+          dataCollection
             ? "Change Data Source (inline)"
             : "Select Data Source (inline)"
         }}
       </button>
       <button
         class="btn btn-secondary btn-outline"
-        :disabled="!dataLocation || showDataLocationNavigator"
-        @click.stop.prevent="handleChangeLocationPopup"
-      >
-        {{
-          dataLocation?.type === "collection"
-            ? "Change Data Source (popup)"
-            : "Select Data Source (popup)"
-        }}
-      </button>
+        @click.stop.prevent="handleConfigureDataSource"
+      >Select Data Source (popup)</button>
       <button
         class="btn btn-ghost"
-        :disabled="!dataLocation || showDataLocationNavigator"
-        @click.stop.prevent="resetLocation"
+        @click.stop.prevent="resetDataSource"
       >
         Reset
       </button>
     </div>
 
     <Suspense v-if="showDataLocationNavigator">
-      <template #default>
-        <DataLocationNavigator
-          :integrationApp="integrationApp"
-          :integrationKey="integrationKey"
-          :path="dataSourceInstance.rootPath"
-          :onChange="handleDataLocationPathChange"
-        />
-      </template>
-      <template #fallback> Loading... </template>
+      <table className="table w-full">
+        <tbody>
+          <tr v-if="directory">
+            <th colspan="2">
+              <button class="btn btn-ghost" @click.stop.prevent="() => handleDirectorySelect(null)">
+                Go Back
+              </button>
+            </th>
+          </tr>
+          <tr v-for="location in dataLocations">
+            <th>{{ location.name }}</th>
+            <td width="10rem" align="right">
+              <button class="btn btn-ghost" @click.stop.prevent="() => handleLocationSelect(location)">
+                {{ location.type === 'directory' ? "Open" : "Select" }}
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
     </Suspense>
   </div>
 </template>
