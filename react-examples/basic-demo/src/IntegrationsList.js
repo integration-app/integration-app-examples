@@ -5,12 +5,8 @@ import {useState} from "react";
 
 function IntegrationsList() {
 
-    const {items, loading, error} = useIntegrations()
+    const {items, loading, error, refresh} = useIntegrations()
     const integrationApp = useIntegrationApp()
-    const [state, setState] = useState(false)
-    if (state) {
-        setState(false)
-    }
 
     if (!loading && !error) {
         return (
@@ -28,16 +24,16 @@ function IntegrationsList() {
                         <td>{integration.connection ? (
                             <>
                                 <Link className="btn btn-sm m-2" to={'/integrations/' + integration.key}>Configure</Link>
-                                <button className="btn btn-sm m-2" onClick={() => {
-                                    integrationApp.connection(integration.connection.id).archive();
-                                    setState(true)
+                                <button className="btn btn-sm m-2" onClick={async () => {
+                                    await integrationApp.connection(integration.connection.id).archive();
+                                    refresh()
                                 }}>Disconnect
                                 </button>
                             </>
                         ) : (
-                            <button className="btn btn-sm m-2" onClick={() => {
-                                integrationApp.integration(integration.key).connect();
-                                setState(true)
+                            <button className="btn btn-sm m-2" onClick={async () => {
+                                await integrationApp.integration(integration.key).connect();
+                                refresh()
                             }}>Connect
                             </button>
                         )}</td>
