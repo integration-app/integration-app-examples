@@ -3,7 +3,6 @@ import IntegrationsList from "./IntegrationsList";
 import {IntegrationAppProvider} from '@integration-app/react'
 import {BrowserRouter, Routes, Route} from 'react-router-dom'
 import IntegrationPage from "./IntegrationPage";
-import './index.css';
 import ReactDOM from 'react-dom/client';
 
 
