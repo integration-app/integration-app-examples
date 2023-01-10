@@ -1,0 +1,10 @@
+{
+  "name": "integrationapp/php",
+  "type": "project",
+  "description": "PHP Example of Integration page backend",
+  "license": "MIT",
+  "require": {
+    "php": "^8.0.2",
+    "firebase/php-jwt": "^6.3"
+  }
+}

@@ -1,0 +1,4 @@
+.gitignore
+public/
+.iapp-ignore
+README.md
