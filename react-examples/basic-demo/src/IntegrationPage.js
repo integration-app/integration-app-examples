@@ -10,7 +10,6 @@ function IntegrationPage() {
     const integrationKey = useParams().integrationKey
     const {integration, loading: integrationLoading} = useIntegration(integrationKey)
     const {items: flows, loading: flowsLoading} = useFlows()
-
     const loaded = !(integrationLoading || flowsLoading)
     if (loaded) {
         return (<>
