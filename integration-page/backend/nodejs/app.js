@@ -14,12 +14,12 @@ app.get('/integration-token', (req, res) => {
 
     const tokenData = {
         // Identifier of user or organization.
-        id: '{USER_ID}',
+        id: 'purejs',
         // Human-readable name (it will simplify troubleshooting)
-        name: '{USER_NAME}',
+        name: 'Pure JS',
         // (optional) Any user fields you want to attach to your user.
         fields: {
-            userField: '<user fields value>'
+            userField: 123
         }
     }
 

@@ -1,35 +1,28 @@
 import {useIntegrationApp, useIntegrations} from '@integration-app/react'
-import {Link} from 'react-router-dom'
 
 
 function IntegrationsList() {
+
+    const integrationApp = useIntegrationApp()
+
     const {
         items: integrations,
         refresh: refreshIntegrations
     } = useIntegrations()
-    const integrationApp = useIntegrationApp()
 
     return (
         <table className="table w-full">
             <tbody>
             {integrations.map((integration) => (
-                <tr>
-                    <td>
-                        <div className="avatar">
-                            <div className="w-16 11 h-16"><img className="App-logo" src={integration.logoUri}/></div>
-                        </div>
-                    </td>
+                <tr key={integration.key}>
+                    <td><img className="avatar w-16 11 h-16 App-logo" src={integration.logoUri}/></td>
                     <td>{integration.name}</td>
                     <td>{integration.connection ? (
-                        <>
-                            <Link className="btn btn-sm m-2"
-                                  to={'/integrations/' + integration.key}>Configure</Link>
-                            <button className="btn btn-sm m-2" onClick={async () => {
-                                await integrationApp.connection(integration.connection.id).archive();
-                                refreshIntegrations()
-                            }}>Disconnect
-                            </button>
-                        </>
+                        <button className="btn btn-sm m-2" onClick={async () => {
+                            await integrationApp.integration(integration.key).disconnect();
+                            refreshIntegrations()
+                        }}>Disconnect
+                        </button>
                     ) : (
                         <button className="btn btn-sm m-2" onClick={async () => {
                             await integrationApp.integration(integration.key).connect();
@@ -37,12 +30,10 @@ function IntegrationsList() {
                         }}>Connect
                         </button>
                     )}</td>
-
                 </tr>
             ))}
             </tbody>
         </table>
-
     )
 }
 

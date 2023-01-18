@@ -1,0 +1,36 @@
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="https://code.jquery.com/jquery-3.6.3.js"
+            integrity="sha256-nQLuAZGRRcILA+6dMBOvcRh5Pe310sBpanc6+QBmyVM=" crossorigin="anonymous"></script>
+    <script src="https://unpkg.com/@integration-app/sdk@0.16.24/bundle.js"></script>
+    <link rel="stylesheet" href="css/styles.css">
+    <script>
+        const integrationKey = (new Proxy(new URLSearchParams(window.location.search), {
+            get: (searchParams, prop) => searchParams.get(prop),
+        })).integration;
+
+        $(window).on('load', async () => {
+            let accessToken = await (await fetch("http://localhost:8080/integration-token")).json()
+            iApp.init({token: accessToken})
+
+            let integration = await iApp.integration(integrationKey).get()
+
+            $('#header').append($(`<div><img src="${integration.logoUri}" class="app-logo"><h1>${integration.name}</h1></div>`))
+
+            let flows = (await iApp.flows.find()).items
+            for (flow of flows) {
+                $('#flows').append(`<tr><td><input type="checkbox" id="flow-${flow.key}" name="flow-${flow.key}"></td><td><label for="flow-${flow.key}">${flow.name}</label></td></tr>`
+                )
+            }
+
+
+        })
+    </script>
+</head>
+<body>
+    <div id="header"></div>
+    <table id="flows"></table>
+</body>
+</html>

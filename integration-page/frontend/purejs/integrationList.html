@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="https://code.jquery.com/jquery-3.6.3.js"
+            integrity="sha256-nQLuAZGRRcILA+6dMBOvcRh5Pe310sBpanc6+QBmyVM=" crossorigin="anonymous"></script>
+    <script src="https://unpkg.com/@integration-app/sdk@0.16.24/bundle.js"></script>
+    <link rel="stylesheet" href="css/styles.css">
+    <script>
+
+        $(window).on('load', async () => {
+            let accessToken = await (await fetch("http://localhost:8080/integration-token")).json()
+
+            // Initialize Integration.app SDK
+            iApp.init({token: accessToken})
+            // Get List of Integrations
+            let integrations = (await iApp.integrations.find()).items
+
+            for (integration of integrations) {
+
+                let integrationRow = $(`
+                        <tr>
+                            <td><img src="${integration.logoUri}" class="app-logo"/></td>
+                            <td>${integration.name}</td>
+                            <td class="actions"></td>
+                        </tr>
+                `);
+                actions = []
+
+                if (integration.connection) {
+
+                    let disconnectButton = $(`<button id="${integration.key}">Disconnect</button>`)
+
+                    $(disconnectButton).on('click', async (e) => {
+                        iApp.connection(connectionId).archive()
+                    })
+
+                    let configureLink = $(`<a id="link-${integration.key}" href="./integrationPage.html?integration=${integration.key}">Configure</a>`)
+
+
+                    actions.push(disconnectButton)
+                    actions.push(configureLink)
+
+                } else {
+
+                    let connectButton = $(`<button id="${integration.key}">Connect</button>`)
+
+                    $(connectButton).on('click', async (e) => {
+                        iApp.integration(e.target.id).connect()
+                    })
+
+                    actions.push(connectButton)
+                }
+
+
+                $(integrationRow).find(`#${integration.key}`).eq(0).on('click', async (e) => {
+                    iApp.integration(e.target.id).connect()
+                })
+
+                $(integrationRow).find('.actions').eq(0).append(actions)
+                $('#integrationsList').append(integrationRow)
+
+            }
+
+        });
+
+    </script>
+</head>
+<body>
+<table id="integrationsList"></table>
+</body>
+</html>
